@@ -1,0 +1,5 @@
+@layer components {
+    .principal {
+        @apply w-lg h-20 flex items-center justify-center bg-gray-100;
+    }
+}
