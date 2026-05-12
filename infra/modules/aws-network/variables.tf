@@ -26,13 +26,13 @@ variable "availability_zone" {
 variable "ssh_cidr_blocks" {
   type        = list(string)
   description = "CIDR blocks allowed to access SSH."
-  default     = ["0.0.0.0/0"]
+  default     = []
 }
 
 variable "app_ports" {
   type        = list(number)
   description = "Application ports exposed from the EC2 instance."
-  default     = [80, 8080]
+  default     = [80]
 }
 
 variable "tags" {

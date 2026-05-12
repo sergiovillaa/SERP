@@ -22,15 +22,18 @@ sudo systemctl start docker
 sleep 10
 
 # dar permisos al usuario ubuntu
-sudo usermod -aG docker ubuntu
+sudo usermod -aG docker ubuntu || true
 
 # ir al home
 cd /home/ubuntu
 
 # clonar repo
-git clone https://github.com/sergiovillaa/SERP.git
+if [ -d "SERP" ]; then
+    git clone https://github.com/sergiovillaa/SERP.git
+fi 
 
 cd SERP
+git pull
 
 # levantar contenedores
 sudo docker compose up -d --build

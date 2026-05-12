@@ -44,3 +44,27 @@ variable "cloudflare_api_token" {
   description = "Cloudflare API token."
   sensitive   = true
 }
+
+variable "ssh_cidr_blocks" {
+  type = list(string)
+  description = "CIDR blocks allowed to access SSH"
+}
+
+variable "cloudflare_account_id" {
+  type = string
+}
+
+variable "frontend_api_base_url" {
+  type = string
+}
+
+variable "frontend_data_mode" {
+  type    = string
+  default = "api"
+}
+
+variable "app_ports" {
+  type        = list(number)
+  description = "Application ports exposed from the EC2 instance."
+  default     = [80]
+}
