@@ -66,7 +66,7 @@ module "cloudflare" {
     source = "../../modules/cloudflare"
 
     account_id             = var.cloudflare_account_id
-    pages_project_name     = var.project_name
+    pages_project_name     = var.pages_project_name
     frontend_api_base_url  = var.frontend_api_base_url
     frontend_data_mode     = var.frontend_data_mode
 }

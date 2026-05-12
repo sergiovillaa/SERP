@@ -11,9 +11,9 @@ key_name      = "serp-prod-key"
 
 cloudflare_account_id = "replace"
 cloudflare_api_token  = "replace"
+pages_project_name = "serp"
 
 ssh_cidr_blocks = ["TU_IP_PUBLICA/32"]
 app_ports       = [80]
 
-frontend_api_base_url = "http://IP_O_DNS_DE_LA_EC2"
 frontend_data_mode    = "api"

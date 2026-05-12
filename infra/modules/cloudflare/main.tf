@@ -1,10 +1,6 @@
-locals {
-  backend_ip = var.backend_ip
-}
-
 resource "cloudflare_pages_project" "frontend" {
   account_id        = var.account_id
-  name              = var.project_name
+  name              = var.pages_project_name
   production_branch = "main"
 
   build_config = {
