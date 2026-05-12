@@ -1,4 +1,4 @@
-project_name = "serp"
+project_name = "serp-dev"
 aws_region   = "us-east-1"
 
 availability_zone  = "us-east-1a"
@@ -9,4 +9,11 @@ ami_id        = "ami-091138d0f0d41ff90"
 instance_type = "t3.micro"
 key_name      = "serp-dev-key"
 
-cloudflare_api_token = "replace"
+cloudflare_account_id = "replace"
+cloudflare_api_token  = "replace"
+
+ssh_cidr_blocks = ["TU_IP_PUBLICA/32"]
+app_ports       = [80]
+
+frontend_api_base_url = "http://IP_O_DNS_DE_LA_EC2"
+frontend_data_mode    = "api"

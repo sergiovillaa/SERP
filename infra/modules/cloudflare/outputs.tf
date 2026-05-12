@@ -1,4 +1,7 @@
-output "backend_ip" {
-  description = "Public IP address available for future Cloudflare records."
-  value       = local.backend_ip
+output "pages_project_name" {
+  value = cloudflare_pages_project.frontend.name
+}
+
+output "pages_subdomain" {
+  value = cloudflare_pages_project.frontend.subdomain
 }

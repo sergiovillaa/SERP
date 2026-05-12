@@ -9,7 +9,7 @@ terraform {
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
   }
 }
@@ -34,11 +34,15 @@ locals {
 
 module "network" {
   source             = "../../modules/aws-network"
+
   project_name       = var.project_name
   environment        = local.environment
   vpc_cidr           = var.vpc_cidr
   public_subnet_cidr = var.public_subnet_cidr
   availability_zone  = var.availability_zone
+  ssh_cidr_blocks    = var.ssh_cidr_blocks
+  app_ports          = var.app_ports
+
   tags               = local.common_tags
 }
 
@@ -59,6 +63,11 @@ module "ec2" {
 }
 
 module "cloudflare" {
-  source     = "../../modules/cloudflare"
-  backend_ip = module.ec2.public_ip
+  source = "../../modules/cloudflare"
+
+  account_id             = var.cloudflare_account_id
+  pages_project_name     = var.pages_project_name
+  frontend_api_base_url  = var.frontend_api_base_url
+  frontend_data_mode     = var.frontend_data_mode
 }
+
