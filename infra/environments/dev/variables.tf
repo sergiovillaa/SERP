@@ -69,3 +69,19 @@ variable "app_ports" {
   description = "Application ports exposed from the EC2 instance."
   default     = [80]
 }
+
+variable "github_owner" {
+  type        = string
+  description = "GitHub owner or organization."
+}
+
+variable "github_repo_name" {
+  type        = string
+  description = "GitHub repository name."
+}
+
+variable "production_branch" {
+  type        = string
+  description = "Branch used for production deployments."
+  default     = "main"
+}
