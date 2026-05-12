@@ -67,7 +67,7 @@ module "cloudflare" {
 
   account_id             = var.cloudflare_account_id
   pages_project_name     = var.pages_project_name
-  frontend_api_base_url  = var.frontend_api_base_url
+  frontend_api_base_url = "http://${module.ec2.public_ip}"
   frontend_data_mode     = var.frontend_data_mode
 }
 
