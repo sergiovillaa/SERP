@@ -65,9 +65,13 @@ module "ec2" {
 module "cloudflare" {
   source = "../../modules/cloudflare"
 
-  account_id             = var.cloudflare_account_id
-  pages_project_name     = var.pages_project_name
+  account_id            = var.cloudflare_account_id
+  pages_project_name    = var.pages_project_name
   frontend_api_base_url = "http://${module.ec2.public_ip}"
-  frontend_data_mode     = var.frontend_data_mode
+  frontend_data_mode    = var.frontend_data_mode
+
+  github_owner     = var.github_owner
+  github_repo_name = var.github_repo_name
+  production_branch = var.production_branch
 }
 

@@ -17,3 +17,7 @@ ssh_cidr_blocks = ["TU_IP_PUBLICA/32"]
 app_ports       = [80]
 
 frontend_data_mode    = "api"
+
+github_owner      = "sergiovillaa"
+github_repo_name  = "SERP"
+production_branch = "main"
