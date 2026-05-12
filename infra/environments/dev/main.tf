@@ -6,20 +6,11 @@ terraform {
             source = "hashicorp/aws"
             version = "~> 5.0"
         }
-
-        cloudflare = {
-            source = "cloudflare/cloudflare"
-            version = "~> 5.0"
-        }
     }
 }
 
 provider "aws" {
     region = var.aws_region
-}
-
-provider "cloudflare" {
-    api_token = var.cloudflare_api_token
 }
 
 locals {
@@ -60,19 +51,6 @@ module "ec2" {
     user_data = file("${path.module}/../../../scripts/bootstrap.sh")
 
     tags = local.common_tags
-}
-
-module "cloudflare" {
-    source = "../../modules/cloudflare"
-
-    account_id            = var.cloudflare_account_id
-    pages_project_name    = var.pages_project_name
-    frontend_api_base_url = "http://${module.ec2.public_ip}"
-    frontend_data_mode    = var.frontend_data_mode
-
-    github_owner     = var.github_owner
-    github_repo_name = var.github_repo_name
-    production_branch = var.production_branch
 }
 
 

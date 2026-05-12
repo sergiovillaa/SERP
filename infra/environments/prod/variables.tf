@@ -39,49 +39,13 @@ variable "key_name" {
   description = "AWS key pair name used to access the EC2 instance."
 }
 
-variable "cloudflare_api_token" {
-  type        = string
-  description = "Cloudflare API token."
-  sensitive   = true
-}
-
 variable "ssh_cidr_blocks" {
   type = list(string)
   description = "CIDR blocks allowed to access SSH"
-}
-
-variable "cloudflare_account_id" {
-  type = string
-}
-
-variable "pages_project_name" {
-  type        = string
-  description = "Cloudflare Pages project name."
-}
-
-variable "frontend_data_mode" {
-  type    = string
-  default = "api"
 }
 
 variable "app_ports" {
   type        = list(number)
   description = "Application ports exposed from the EC2 instance."
   default     = [80]
-}
-
-variable "github_owner" {
-  type        = string
-  description = "GitHub owner or organization."
-}
-
-variable "github_repo_name" {
-  type        = string
-  description = "GitHub repository name."
-}
-
-variable "production_branch" {
-  type        = string
-  description = "Branch used for production deployments."
-  default     = "main"
 }

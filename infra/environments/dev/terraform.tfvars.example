@@ -9,15 +9,5 @@ ami_id        = "ami-091138d0f0d41ff90"
 instance_type = "t3.micro"
 key_name      = "serp-dev-key"
 
-cloudflare_account_id = "replace"
-cloudflare_api_token  = "replace"
-pages_project_name = "serp-dev"
-
 ssh_cidr_blocks = ["TU_IP_PUBLICA/32"]
 app_ports       = [80]
-
-frontend_data_mode    = "api"
-
-github_owner      = "sergiovillaa"
-github_repo_name  = "SERP"
-production_branch = "dev"
