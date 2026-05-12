@@ -2,9 +2,9 @@ variable "account_id" {
   type = string
 }
 
-variable "project_name" {
+variable "pages_project_name" {
   type        = string
-  description = "Project name used for naming resources."
+  description = "Cloudflare Pages project name."
 }
 
 variable "frontend_api_base_url" {

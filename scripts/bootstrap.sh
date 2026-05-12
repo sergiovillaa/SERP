@@ -28,7 +28,7 @@ sudo usermod -aG docker ubuntu || true
 cd /home/ubuntu
 
 # clonar repo
-if [ -d "SERP" ]; then
+if [ ! -d "SERP" ]; then
     git clone https://github.com/sergiovillaa/SERP.git
 fi 
 
