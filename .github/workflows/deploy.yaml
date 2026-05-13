@@ -1,0 +1,131 @@
+name: SERP CI/CD
+
+on:
+  push:
+    branches:
+      - dev
+      - main 
+
+jobs:
+  deploy: 
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+
+    env:
+      AWS_REGION: us-east-1
+      TF_DIR: ${{ github.ref_name == 'main' && 'infra/environments/prod' || 'infra/environments/dev' }}
+      CF_PROJECT_NAME: ${{ github.ref_name == 'main' && 'serp' || 'serp-dev' }}
+      DEPLOY_BRANCH: ${{ github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm install
+
+      - name: Run backend unit tests
+        working-directory: backend
+        run: npm test
+
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform init -reconfigure
+
+      - name: Terraform apply
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform apply -auto-approve -input=false
+
+      - name: Read Terraform outputs
+        id: tf
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          echo "ec2_ip=$(terraform output -raw ec2_public_ip)" >> "$GITHUB_OUTPUT"
+          echo "instance_id=$(terraform output -raw ec2_instance_id)" >> "$GITHUB_OUTPUT"
+
+      - name: Show backend URL
+        run: |
+          echo "Backend URL: http://${{ steps.tf.outputs.ec2_ip }}"
+          echo "Health check: http://${{ steps.tf.outputs.ec2_ip }}/health"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: http://${{ steps.tf.outputs.ec2_ip }}
+          VITE_DATA_MODE: api
+
+      - name: Create Cloudflare Pages project if missing
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages project create ${{ env.CF_PROJECT_NAME }} --production-branch=${{ env.DEPLOY_BRANCH }}
+
+      - name: Deploy frontend to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy frontend/dist --project-name=${{ env.CF_PROJECT_NAME }} --branch=${{ env.DEPLOY_BRANCH }}
+
+      - name: Deploy backend through SSM
+        run: |
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "${{ steps.tf.outputs.instance_id }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy SERP backend" \
+            --parameters '{"commands":["export HOME=/root","export GIT_CONFIG_GLOBAL=/tmp/gitconfig","cd /home/ubuntu","test -d SERP || git clone https://github.com/sergiovillaa/SERP.git","git config --global --add safe.directory /home/ubuntu/SERP","cd /home/ubuntu/SERP","git fetch origin","git checkout '"$DEPLOY_BRANCH"'","git reset --hard origin/'"$DEPLOY_BRANCH"'","docker compose up -d --build"]}' \
+            --query "Command.CommandId" \
+            --output text)
+
+          echo "SSM command id: $COMMAND_ID"
+
+          set +e
+          aws ssm wait command-executed \
+            --command-id "$COMMAND_ID" \
+            --instance-id "${{ steps.tf.outputs.instance_id }}"
+          WAIT_EXIT_CODE=$?
+          set -e
+
+          aws ssm get-command-invocation \
+            --command-id "$COMMAND_ID" \
+            --instance-id "${{ steps.tf.outputs.instance_id }}" \
+            --query "{Status:Status,Stdout:StandardOutputContent,Stderr:StandardErrorContent}" \
+            --output json
+
+          exit $WAIT_EXIT_CODE
+
+
+
+
