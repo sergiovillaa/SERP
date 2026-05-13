@@ -34,11 +34,6 @@ variable "instance_type" {
   description = "EC2 instance type."
 }
 
-variable "key_name" {
-  type        = string
-  description = "AWS key pair name used to access the EC2 instance."
-}
-
 variable "ssh_cidr_blocks" {
   type = list(string)
   description = "CIDR blocks allowed to access SSH"

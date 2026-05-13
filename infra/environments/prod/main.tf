@@ -44,7 +44,6 @@ module "ec2" {
   environment        = local.environment
   ami_id             = var.ami_id
   instance_type      = var.instance_type
-  key_name           = var.key_name
   subnet_id          = module.network.public_subnet_id
   security_group_ids = [module.network.ec2_security_group_id]
 

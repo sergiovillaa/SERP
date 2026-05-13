@@ -21,6 +21,7 @@ variable "instance_type" {
 variable "key_name" {
   type        = string
   description = "AWS key pair name used to access the EC2 instance."
+  default = null
 }
 
 variable "subnet_id" {
