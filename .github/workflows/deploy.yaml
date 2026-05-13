@@ -105,7 +105,7 @@ jobs:
             --instance-ids "${{ steps.tf.outputs.instance_id }}" \
             --document-name "AWS-RunShellScript" \
             --comment "Deploy SERP backend" \
-            --parameters commands="cd /home/ubuntu && if [ ! -d SERP ]; then git clone https://github.com/sergiovillaa/SERP.git; fi && git config --global --add safe.directory /home/ubuntu/SERP && cd SERP && git fetch origin && git checkout $DEPLOY_BRANCH && git reset --hard origin/$DEPLOY_BRANCH && docker compose up -d --build" \
+            --parameters '{"commands":["cd /home/ubuntu","test -d SERP || git clone https://github.com/sergiovillaa/SERP.git","git config --global --add safe.directory /home/ubuntu/SERP","cd /home/ubuntu/SERP","git fetch origin","git checkout '"$DEPLOY_BRANCH"'","git reset --hard origin/'"$DEPLOY_BRANCH"'","docker compose up -d --build"]}' \
             --query "Command.CommandId" \
             --output text)
 
@@ -125,5 +125,6 @@ jobs:
             --output json
 
           exit $WAIT_EXIT_CODE
+
 
 
